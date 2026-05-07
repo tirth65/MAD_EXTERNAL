@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "383707386307",
+    "project_id": "external-417c6",
+    "storage_bucket": "external-417c6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383707386307:android:02a66d6e512e31c7d96d76",
+        "android_client_info": {
+          "package_name": "com.antigravity.mealplanner.smart_meal_planner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOMTRU1RAhXxlC1mx3_jELEVFqzOut7c8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
