@@ -9,7 +9,10 @@ import 'package:smart_meal_planner/features/nutrition/ui/daily_tracking_screen.d
 import 'package:smart_meal_planner/features/meal_planning/ui/meal_planning_screen.dart';
 import 'package:smart_meal_planner/features/nutrition/ui/food_database_screen.dart';
 import 'package:smart_meal_planner/features/analytics/ui/analytics_dashboard_screen.dart';
+import 'package:smart_meal_planner/features/nutrition/providers/nutrition_provider.dart';
 import 'package:smart_meal_planner/features/nutrition/ui/search_filter_screen.dart';
+
+import 'package:smart_meal_planner/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,12 +29,24 @@ void main() async {
   await Hive.openBox<MealItem>('meals');
   await Hive.openBox<NutritionGoal>('goals');
 
-  // Initialize Firebase (Optional/Catch error if config missing)
+  // Initialize Firebase
   try {
-    // await Firebase.initializeApp();
-    print('Firebase initialization skipped for now (missing credentials)');
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    debugPrint('Firebase initialized successfully');
+    
+    // Auto-sync existing data to Cloud
+    final container = ProviderContainer();
+    final meals = container.read(mealsProvider);
+    final firebase = container.read(firebaseServiceProvider);
+    for (final meal in meals) {
+      await firebase.syncMeal(meal);
+    }
+    debugPrint('Initial cloud sync completed');
+    
   } catch (e) {
-    print('Firebase initialization failed: $e');
+    debugPrint('Firebase initialization failed: $e');
   }
 
   runApp(

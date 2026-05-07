@@ -7,6 +7,8 @@ import 'package:smart_meal_planner/features/nutrition/ui/food_selection_screen.d
 import 'package:smart_meal_planner/features/settings/ui/goal_setting_screen.dart';
 import 'package:intl/intl.dart';
 
+final waterIntakeProvider = StateProvider<int>((ref) => 0);
+
 class DailyTrackingScreen extends ConsumerWidget {
   const DailyTrackingScreen({super.key});
 
@@ -14,6 +16,7 @@ class DailyTrackingScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final meals = ref.watch(mealsProvider);
     final goal = ref.watch(dailyGoalProvider);
+    final waterGlasses = ref.watch(waterIntakeProvider);
     
     final todayMeals = ref.read(mealsProvider.notifier).getMealsForDate(DateTime.now());
     final consumedCalories = todayMeals.fold(0.0, (sum, item) => sum + item.calories);
@@ -73,6 +76,8 @@ class DailyTrackingScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   _buildNutrientBreakdown(context, totalProtein, totalCarbs, totalFats),
                   const SizedBox(height: 24),
+                  _buildHydrationTracker(context, ref, waterGlasses),
+                  const SizedBox(height: 24),
                   Text('Today\'s Meals', style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 12),
                   if (todayMeals.isEmpty)
@@ -94,6 +99,64 @@ class DailyTrackingScreen extends ConsumerWidget {
         },
         backgroundColor: AppTheme.primaryGreen,
         child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildHydrationTracker(BuildContext context, WidgetRef ref, int glasses) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.blue.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Hydration', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                Text('Goal: 8 glasses (2L)', style: TextStyle(color: Colors.blue[700], fontSize: 12)),
+                const SizedBox(height: 12),
+                Row(
+                  children: List.generate(8, (index) {
+                    final isFilled = index < glasses;
+                    return Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: isFilled ? Colors.blue : Colors.blue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 20),
+          GestureDetector(
+            onTap: () => ref.read(waterIntakeProvider.notifier).state = (glasses + 1) % 9,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4)),
+                ],
+              ),
+              child: const Icon(Icons.local_drink, color: Colors.white),
+            ),
+          ),
+        ],
       ),
     );
   }
