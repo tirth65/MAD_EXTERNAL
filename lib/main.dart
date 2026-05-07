@@ -1,3 +1,4 @@
+// Version: 1.0.0 - Final Production Release
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
